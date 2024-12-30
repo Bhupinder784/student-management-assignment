@@ -9,14 +9,15 @@ function displayMenu() {
         1) Take Test
         2) View Result
         3) View Students Result
-        4) Exit
+        4) View Classwise Result
+        5) Exit
     `);
 }
 
 function calculateResult(student){
     if(!student.totalMarks || !student.percentage){
         const totalMarks = student.testScore.reduce((acc, test) => acc + test.marks, 0);
-        const percentage = (totalMarks/ (student.testScore.length * 100)) * 100;
+        const percentage = (totalMarks / (student.testScore.length * 100)) * 100;
 
         student.totalMarks = totalMarks;
         student.percentage = percentage.toFixed(2);
@@ -41,16 +42,20 @@ function viewResult(){
     const student = Students.find(s => s.roll === rollNo);
 
     if(student){
-        if(!student.testScore || student.testScore === 0){
-            console.log("No test scores found for this student. Please take the test first.\n");
+        if (!student.testScore || student.testScore.length === 0) {
+            console.log("The student has not taken the test yet. Please take the test first.\n");
             return;
         }
 
         calculateResult(student);
         console.log(`\nResult for Roll No: ${rollNo}, Name: ${student.name}`);
+
         student.testScore.forEach(test => {
             console.log(`${test.subjectName}: ${test.marks}`);
         });
+
+        console.log(`Total Marks: ${student.totalMarks}`);
+        console.log(`Percentage: ${student.percentage}%\n`);
     }  else {
         console.log("\nStudent not found.\n");
     }
@@ -72,6 +77,35 @@ function viewAllResults(){
     })
 }
 
+function viewClasswiseResult(){
+    console.log("\nClasswise Results:");
+
+    const classwiseResults = {}
+    Students.forEach(student => {
+        if(!student.testScore || student.testScore.length === 0){
+            return;
+        }
+
+        calculateResult(student);
+        const className = `Class ${student.class}`;
+        if(!classwiseResults[className]){
+            classwiseResults[className] = [];
+        }
+
+        classwiseResults[className].push(student);
+    });
+
+    for(const className in classwiseResults){
+        console.log(`\nResults for ${className}:`)
+        classwiseResults[className].forEach(student => {
+            console.log(`Roll No: ${student.roll}, Name: ${student.name}`);
+            console.log(`  Total Marks: ${student.totalMarks}`);
+            console.log(`  Percentage: ${student.percentage}%`);
+            console.log();
+        })
+    }
+}
+
 
 function mainMenu(){
     while(true){
@@ -87,7 +121,10 @@ function mainMenu(){
             case '3':
                 viewAllResults();
                 break;
-            case '4':
+            case '4' :
+                viewClasswiseResult();
+                break;
+            case '5':
                 console.log("\nExiting the program...");
                 return;
             default : 
