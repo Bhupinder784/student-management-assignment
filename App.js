@@ -11,8 +11,39 @@ function displayMenu() {
         3) View Students Result
         4) View Classwise Result
         5) Details Analysis of Result
-        6) Exit
+        6) View Top Performer
+        7) Exit
     `);
+}
+
+function viewTopPerformers(){
+    console.log("\nClasswise Top 3 Performers:");
+
+    const calsswisePerformer = {};
+    Students.forEach(student => {
+        if(!student.testScore || student.testScore.length === 0){
+            return;
+        }
+
+        const className = `Class ${student.class}`;
+        if(!calsswisePerformer[className]){
+            calsswisePerformer[className] = [];
+        }
+        calsswisePerformer[className].push(student);
+    })
+
+    for(const className in calsswisePerformer){
+        const students = calsswisePerformer[className];
+        students.sort((a, b) => b.totalMarks - a.totalMarks);
+
+        console.log(`\n${className}:`);
+        students.slice(0, 3).forEach((student, index) => {
+            console.log(
+                `${index + 1}. Roll No: ${student.roll}, Name: ${student.name}, Total Marks: ${student.totalMarks}, Percentage: ${student.percentage}%`
+            );
+        })
+    }
+    console.log();
 }
 
 function detailsAnalysisOfResult(){
@@ -207,7 +238,10 @@ function mainMenu(){
             case '5' :
                 detailsAnalysisOfResult();
                 break;
-            case '6':
+            case '6' : 
+                viewTopPerformers();
+                break;
+            case '7':
                 console.log("\nExiting the program...");
                 return;
             default : 
