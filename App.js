@@ -14,16 +14,27 @@ function displayMenu() {
     `);
 }
 
-function calculateResult(student){
-    if(!student.totalMarks || !student.percentage){
-        const totalMarks = student.testScore.reduce((acc, test) => acc + test.marks, 0);
-        const percentage = (totalMarks / (student.testScore.length * 100)) * 100;
+// function calculateResult(student){
+//     if(!student.totalMarks || !student.percentage){
+//         const totalMarks = student.testScore.reduce((acc, test) => acc + test.marks, 0);
+//         const percentage = (totalMarks/ (student.testScore.length * 100)) * 100;
 
-        student.totalMarks = totalMarks;
-        student.percentage = percentage.toFixed(2);
-    }
-    return student;
-}
+//         student.totalMarks = totalMarks;
+//         student.percentage = percentage.toFixed(2);
+//     }
+//     return student;
+// }
+
+// function takeTest(){
+//     console.log("\nGenerating marks for all students...");
+//     Students.forEach(student => {
+//         student.testScore = ["Math", "Science", "English"].map(subject => ({
+//             subjectName : subject,
+//             marks : Math.floor(Math.random() * 51) + 0,
+//         }))
+//     });
+//     console.log("Test completed and marks updated for all students.\n");
+// }
 
 function takeTest(){
     console.log("\nGenerating marks for all students...");
@@ -32,7 +43,14 @@ function takeTest(){
             subjectName : subject,
             marks : Math.floor(Math.random() * 51) + 0,
         }))
+
+        const totalMarks = student.testScore.reduce((acc, test) => acc + test.marks, 0);
+        const percentage = (totalMarks / (student.testScore.length * 100)) * 100;
+
+        student.totalMarks = totalMarks;
+        student.percentage = percentage.toFixed(2);
     });
+
     console.log("Test completed and marks updated for all students.\n");
     
 }
@@ -47,7 +65,7 @@ function viewResult(){
             return;
         }
 
-        calculateResult(student);
+        // calculateResult(student);
         console.log(`\nResult for Roll No: ${rollNo}, Name: ${student.name}`);
 
         student.testScore.forEach(test => {
@@ -69,7 +87,7 @@ function viewAllResults(){
             return;
         }
 
-        calculateResult(student);
+        // calculateResult(student);
         console.log(`Roll No: ${student.roll}, Name: ${student.name}`);
         console.log(`  Total Marks: ${student.totalMarks}`);
         console.log(`  Percentage: ${student.percentage}%`);
@@ -86,7 +104,7 @@ function viewClasswiseResult(){
             return;
         }
 
-        calculateResult(student);
+        // calculateResult(student);
         const className = `Class ${student.class}`;
         if(!classwiseResults[className]){
             classwiseResults[className] = [];
