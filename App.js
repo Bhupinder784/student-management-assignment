@@ -10,31 +10,92 @@ function displayMenu() {
         2) View Result
         3) View Students Result
         4) View Classwise Result
-        5) Exit
+        5) Details Analysis of Result
+        6) Exit
     `);
 }
 
-// function calculateResult(student){
-//     if(!student.totalMarks || !student.percentage){
-//         const totalMarks = student.testScore.reduce((acc, test) => acc + test.marks, 0);
-//         const percentage = (totalMarks/ (student.testScore.length * 100)) * 100;
+function detailsAnalysisOfResult(){
+    console.log("\nDetails Analysis of Results:");
+    const classwiseAnalysis = {};
 
-//         student.totalMarks = totalMarks;
-//         student.percentage = percentage.toFixed(2);
-//     }
-//     return student;
-// }
+    Students.forEach(student => {
+        if(!student.testScore || student.testScore.length === 0){
+            return; 
+        }
 
-// function takeTest(){
-//     console.log("\nGenerating marks for all students...");
-//     Students.forEach(student => {
-//         student.testScore = ["Math", "Science", "English"].map(subject => ({
-//             subjectName : subject,
-//             marks : Math.floor(Math.random() * 51) + 0,
-//         }))
-//     });
-//     console.log("Test completed and marks updated for all students.\n");
-// }
+        const className = `Class ${student.class}`;
+        if (!classwiseAnalysis[className]) {
+            classwiseAnalysis[className] = {
+                students: [],
+                totalMarks: 0,
+                totalPercentage: 0,
+                failedCount: 0,
+                passedCount: 0,
+            };
+        }
+        classwiseAnalysis[className].students.push(student);
+    })
+
+    const analysisResults = [];
+    for(const className in classwiseAnalysis){
+        
+        const { students } = classwiseAnalysis[className];
+        console.log("abcd: ", students)
+        const totalStudents = students.length;
+        let totalMarks = 0;
+        let totalPercentage = 0;
+        let failedCount = 0;
+        let passedCount = 0;
+
+        students.forEach(student => {
+            totalMarks += student.totalMarks;
+            totalPercentage += parseFloat(student.percentage);
+            if(student.percentage < 40){
+                failedCount++;
+            }else{
+                passedCount++;
+            }
+        })
+
+        const averageTotalMarks = (totalMarks / totalStudents).toFixed(2);
+        const averagePercentage = (totalPercentage / totalStudents).toFixed(2);
+        const failedPercentage = ((failedCount / totalStudents) * 100).toFixed(2);
+        const passedPercentage = ((passedCount / totalStudents) * 100).toFixed(2);
+
+        let overallGrade;
+        if(averagePercentage >= 85){
+            overallGrade  = 'A';
+        }else if(averagePercentage >= 70){
+            overallGrade = 'B';
+        }else if(averagePercentage >= 50){
+            overallGrade = 'C'
+        }else{
+            overallGrade = 'D';
+        }
+
+        analysisResults.push({
+            className,
+            totalStudents,
+            averageTotalMarks,
+            averagePercentage,
+            overallGrade,
+            failedCount,
+            failedPercentage,
+            passedCount,
+            passedPercentage
+        })
+    }
+
+    console.log("\nClass | Total Students | Avg Marks | Avg % | Grade | Failed Count | Failed % | Passed Count | Passed %");
+    console.log("-----------------------------------------------------------------------------------------------");
+    analysisResults.forEach(result => {
+        console.log(
+            `${result.className} | ${result.totalStudents} | ${result.averageTotalMarks} | ${result.averagePercentage}% | ${result.overallGrade} | ${result.failedCount} | ${result.failedPercentage}% | ${result.passedCount} | ${result.passedPercentage}%`
+        )
+    })
+    console.log();
+}
 
 function takeTest(){
     console.log("\nGenerating marks for all students...");
@@ -120,6 +181,7 @@ function viewClasswiseResult(){
             console.log(`  Total Marks: ${student.totalMarks}`);
             console.log(`  Percentage: ${student.percentage}%`);
             console.log();
+            console.log("----------------------------")
         })
     }
 }
@@ -142,7 +204,10 @@ function mainMenu(){
             case '4' :
                 viewClasswiseResult();
                 break;
-            case '5':
+            case '5' :
+                detailsAnalysisOfResult();
+                break;
+            case '6':
                 console.log("\nExiting the program...");
                 return;
             default : 
